@@ -1,0 +1,81 @@
+ ___   _    _                 _     _   ___ 
+|  _| | |  | |               | |   (_) |_  |
+| |   | |  | | __ _ ___  __ _| |__  _    | |
+| |   | |/\| |/ _` / __|/ _` | '_ \| |   | |
+| |   \  /\  / (_| \__ \ (_| | |_) | |   | |
+| |_   \/  \/ \__,_|___/\__,_|_.__/|_|  _| |
+|___|                                  |___|
+https://github.com/rafaelgandi/wasabi_artisan                                           
+====================================================
+Rafael Gandionco | Version 1.0 | www.rafaelgandi.tk
+====================================================
+Doing root changes...
+File C:\xampp\htdocs\cleverbons\app\../etc/.env.example copied
+File C:\xampp\htdocs\cleverbons\app\../etc/gulpfile.js copied
+File C:\xampp\htdocs\cleverbons\app\../etc/phpspec.yml copied
+File C:\xampp\htdocs\cleverbons\app\../etc/phpunit.xml copied
+File C:\xampp\htdocs\cleverbons\app\../etc/readme.md copied
+File C:\xampp\htdocs\cleverbons\app\../etc/composer.json copied
+File C:\xampp\htdocs\cleverbons\app\../etc/composer.lock copied
+File C:\xampp\htdocs\cleverbons\app\../etc/package.json copied
+File C:\xampp\htdocs\cleverbons\app\../etc/.gitignore copied
+Unable to find file "C:\xampp\htdocs\cleverbons\app\../.env" when trying to copy it
+File C:\xampp\htdocs\cleverbons\app\../composer.json copied
+File C:\xampp\htdocs\cleverbons\app\../package.json copied
+File C:\xampp\htdocs\cleverbons\app\../.env copied
+File C:\xampp\htdocs\cleverbons\app\../.gitignore copied
+File C:\xampp\htdocs\cleverbons\app\../environment.php copied
+File C:\xampp\htdocs\cleverbons\app\../cron.php copied
+Root changes done.
+Doing public dir changes...
+C:\xampp\htdocs\cleverbons\public\js/bundles copied
+C:\xampp\htdocs\cleverbons\public\js/jquery-plugins copied
+C:\xampp\htdocs\cleverbons\public\js/pages copied
+C:\xampp\htdocs\cleverbons\public\js/third_party copied
+C:\xampp\htdocs\cleverbons\public\js copied
+C:\xampp\htdocs\cleverbons\public\css copied
+C:\xampp\htdocs\cleverbons\public\uploads copied
+C:\xampp\htdocs\cleverbons\public\index.php copied
+Public dir changes done.
+Doing config dir changes...
+C:\xampp\htdocs\cleverbons\config copied
+Config dir changes done.
+Doing app dir changes...
+C:\xampp\htdocs\cleverbons\app\Exceptions/Handler.php copied
+C:\xampp\htdocs\cleverbons\app\Http/Routes copied
+File C:\xampp\htdocs\cleverbons\app\Http/Controllers/AuthController.php copied
+File C:\xampp\htdocs\cleverbons\app\Http/Controllers/WasabiBaseController.php copied
+File C:\xampp\htdocs\cleverbons\app\Http/Controllers/CronController.php copied
+File C:\xampp\htdocs\cleverbons\app\Http/Controllers/ApiController.php copied
+File C:\xampp\htdocs\cleverbons\app\Http/routes.php copied
+C:\xampp\htdocs\cleverbons\app\Helpers copied
+C:\xampp\htdocs\cleverbons\app\Nkie12 copied
+C:\xampp\htdocs\cleverbons\app\third_party/JShrink copied
+C:\xampp\htdocs\cleverbons\app\third_party/Respect/Validation/Exceptions copied
+C:\xampp\htdocs\cleverbons\app\third_party/Respect/Validation/Rules copied
+C:\xampp\htdocs\cleverbons\app\third_party/Respect/Validation copied
+C:\xampp\htdocs\cleverbons\app\third_party/Respect copied
+C:\xampp\htdocs\cleverbons\app\third_party copied
+File C:\xampp\htdocs\cleverbons\app\app_autoloader.php copied
+File C:\xampp\htdocs\cleverbons\app\Assets.php copied
+File C:\xampp\htdocs\cleverbons\app\Crypt.php copied
+File C:\xampp\htdocs\cleverbons\app\Files.php copied
+File C:\xampp\htdocs\cleverbons\app\Json.php copied
+File C:\xampp\htdocs\cleverbons\app\Helpers.php copied
+File C:\xampp\htdocs\cleverbons\app\Upload.php copied
+File C:\xampp\htdocs\cleverbons\app\Xplog.php copied
+App dir changes done.
+Doing resources dir changes...
+C:\xampp\htdocs\cleverbons\app\../resources/views/errors/custom copied
+File C:\xampp\htdocs\cleverbons\app\../resources/views/welcome.blade.php copied
+Resources dir changes done.
+Attempting to remove /app/Console/Commands/wasabi_artisan/...
+Now go update your: 
+> C:\Windows\System32\drivers\etc\hosts
+> C:\xampp\apache\conf\extra\httpd-vhosts.conf
+====================================================
+Wasabified: 2015-10-07 @ 04:58:47 PM
+====================================================
+
+
+This file is generated to prove that this installation of Laravel has been installed with Wasabi
