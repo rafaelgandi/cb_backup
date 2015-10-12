@@ -1,0 +1,9 @@
+API INSTRUCTIONS
+================
+
+API url: (Note: Please use POST method in accessing all the API.)
+http://<MAY VARY PER SERVER>/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json
+
+Required parameters for all api:
+	* pass_key - 249c429fbdbcd5db8e7b7fce7e58cd92
+	* api_name - Name of the api you want to call.

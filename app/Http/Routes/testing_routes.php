@@ -32,7 +32,13 @@ Route::get('/sessions', function () {
 	_pr(session()->all());
 });
 
+
 Route::get('/testing', function () {
+	echo App\Cb\RealTime::foo();
+});
+
+
+Route::get('/base64upload', function () {
 	$data = '/9j/4AAQSkZJRgABAQAAAQABAAD/4QA2RXhpZgAASUkqAAgAAAABADIBAgAUAAAAGgAAAAAAAAAy
 MDExOjEwOjEyIDE1OjAzOjA0AP/bAEMABgQFBgUEBgYFBgcHBggKEAoKCQkKFA4PDBAXFBgYFxQW
 FhodJR8aGyMcFhYgLCAjJicpKikZHy0wLSgwJSgpKP/bAEMBBwcHCggKEwoKEygaFhooKCgoKCgo
@@ -125,3 +131,5 @@ dIB93Tp06dAZjiw+GSUTWZPKL8dM1YNusCHEzViNr5AoYuACN6wfao1zkANaVoyCyCB6v5emh9s1
 	//App\Xplog::write('asdfasdf');
 	return App\Upload::foo();
 });
+
+

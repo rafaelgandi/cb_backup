@@ -1,0 +1,6 @@
+[12-Oct-2015 02:36:31 UTC] PHP Fatal error:  Class 'App\Cb\Api\Exceptyon' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\ApiController.php on line 28
+[12-Oct-2015 02:48:04 UTC] PHP Fatal error:  Call to undefined function home_url() in C:\xampp\htdocs\cleverbons\app\Http\Routes\api_routes.php on line 22
+[12-Oct-2015 03:09:28 UTC] PHP Parse error:  syntax error, unexpected ':', expecting ']' in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 50
+[12-Oct-2015 06:33:36 UTC] PHP Parse error:  syntax error, unexpected ''checked'' (T_CONSTANT_ENCAPSED_STRING), expecting ',' or ';' in C:\xampp\htdocs\cleverbons\resources\views\user_signup.php on line 21
+[12-Oct-2015 07:09:10 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Exception' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\UserController.php on line 71
+[12-Oct-2015 07:09:43 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Exception' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\UserController.php on line 71

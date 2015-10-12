@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller;
 use Respect\Validation\Validator as Valid;
 use View;
 use Auth;
+use Exception;
 
 class WasabiBaseController extends Controller {
 	

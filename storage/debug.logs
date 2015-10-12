@@ -1,0 +1,5 @@
+
+INFO - 2015-10-12 10:55:18 AM --> {"msg":"[A token mismatch error happend]","request_uri":"/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json","ip":"127.0.0.1","code":"AppExceptionsHandler::render"}
+INFO - 2015-10-12 11:35:49 AM --> {"msg":"[A token mismatch error happend]","request_uri":"/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json","ip":"127.0.0.1","code":"AppExceptionsHandler::render"}
+INFO - 2015-10-12 02:26:12 PM --> {"msg":"[A token mismatch error happend]","request_uri":"/signup","ip":"127.0.0.1","code":"AppExceptionsHandler::render"}
+INFO - 2015-10-12 02:26:34 PM --> {"msg":"[A token mismatch error happend]","request_uri":"/signup","ip":"127.0.0.1","code":"AppExceptionsHandler::render"}
