@@ -46,6 +46,8 @@
 	<input type="text" name="company_city" value="<?php echo $post['company_city'];?>">
 	<label>Company Postcode</label>
 	<input type="text" name="company_postcode" value="<?php echo $post['company_postcode'];?>">
+	<label>Company Logo</label>
+	<input type="file" name="company_logo" >
 	<label>Company Color</label>
 	<input type="text" name="company_color" value="<?php echo $post['company_color'];?>">
 	<label>Terms and Conditions</label>

@@ -55,7 +55,8 @@ class UserController extends WasabiBaseController {
 			$checks['fname'] = Valid::string()->notEmpty()->validate($p['fname']);
 			$checks['lname'] = Valid::string()->notEmpty()->validate($p['lname']);
 			$checks['email'] = Valid::email()->notEmpty()->validate($p['email']);
-			$checks['password'] = Valid::string()->notEmpty()->validate($p['password']);			
+			$checks['password'] = Valid::string()->notEmpty()->validate($p['password']);
+			$checks['cpassword'] = Valid::string()->notEmpty()->equals($p['password'])->validate($p['cpassword']); // Check password confirmation			
 			$checks['phone'] = Valid::string()->notEmpty()->validate($p['phone']);
 			$checks['cell'] = Valid::string()->notEmpty()->validate($p['cell']);
 			if (isset($p['is_agent']) && intval($p['is_agent']) === 1) {
@@ -70,9 +71,52 @@ class UserController extends WasabiBaseController {
 			}
 			$checks['terms'] = isset($p['terms']);
 			try {
-				if (in_array(false, $checks)) { throw new Exception('Some required field have invalid values.'); }
+				if (in_array(false, $checks)) {
+					$err_msg = 'Some required field(s) have invalid values.';
+					if ($checks['terms'] === false) { $err_msg = 'You did not agree to the terms and conditions.'; }
+					if ($checks['cpassword'] === false) { $err_msg = 'Password mismatch.'; }	
+					throw new Exception($err_msg);
+				}
 				if (App\Cb\Users::emailExists($p['email'])) { throw new Exception('Sorry the email address your provided is already registered in our system.'); }
+				$user_id = App\Cb\Users::add([
+					'email' => $p['email'],
+					'password' => $p['password'],
+					'fname' => $p['fname'],
+					'lname' => $p['lname'],
+					'phone' => $p['phone'],
+					'cellphone' => $p['cell']
+				]);
+				if (! $user_id ) {
+					throw new Exception('Unable to save your details. Please check your connection and try again.');
+				}
+				if (isset($p['is_agent']) && intval($p['is_agent']) === 1) {
+					// Save the company details first //
+					$company_details = App\Cb\Users\Company::add($user_id, [
+						'name' => $p['company_name'],
+						'abn' => $p['company_abn'],
+						'street' => $p['company_street'],
+						'city' => $p['company_city'],
+						'state' => $p['company_state'],
+						'postcode' => $p['company_postcode'],
+						'phone' => $p['company_phone'],
+						'logo' => '', /* @BOOKMARK: TODO add the logo filename here */
+						'primary_color' => $p['company_color']
+					]);
+					if (! $user_id ) {
+						throw new Exception('Unable to save your company details. Please check your connection and try again.');
+					}
+					$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
+					// Checko if file is a valid image //
+					if (! isset($_FILES['company_logo']) || ! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
+						throw new Exception('Please upload a valid logo');
+					}				
+					$logo_saved = App\Cb\Users\Company::saveLogo($user_id, $_FILES['company_logo']);
+				}
+				/* @BOOKMARK: TODO more stuff here */
 				_pr($p);
+				
+				
+				
 			}
 			catch (Exception $err) {
 				$data['cb_err_msg'] = $err->getMessage();

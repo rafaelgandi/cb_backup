@@ -14,8 +14,8 @@ Route::group(['prefix' => 'api'], function () {
 		// See: http://davidwalsh.name/curl-post
 		//set POST variables
 		$fields = array(
-			//'pass_key' => config('api.passkey'), // required
-			'api_name' => 'check',
+			'pass_key' => config('api.passkey'), // required
+			'api_name' => 'get_user_auth_details',
 			'data' => [
 				'foo' => 'bar'
 			]

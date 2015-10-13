@@ -4,3 +4,6 @@
 [12-Oct-2015 06:33:36 UTC] PHP Parse error:  syntax error, unexpected ''checked'' (T_CONSTANT_ENCAPSED_STRING), expecting ',' or ';' in C:\xampp\htdocs\cleverbons\resources\views\user_signup.php on line 21
 [12-Oct-2015 07:09:10 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Exception' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\UserController.php on line 71
 [12-Oct-2015 07:09:43 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Exception' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\UserController.php on line 71
+[13-Oct-2015 01:49:23 UTC] PHP Parse error:  syntax error, unexpected '=>' (T_DOUBLE_ARROW), expecting ']' in C:\xampp\htdocs\cleverbons\app\Http\Controllers\ApiController.php on line 25
+[13-Oct-2015 01:49:57 UTC] PHP Parse error:  syntax error, unexpected ';' in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 38
+[13-Oct-2015 01:50:54 UTC] PHP Parse error:  syntax error, unexpected '}' in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 55

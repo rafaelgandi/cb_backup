@@ -23,4 +23,44 @@ class Users extends App\Cb\Base {
 		$res = DB::table('users')->where('email', $e)->first();
 		return !! $res;
 	}
+	
+	protected function add($_params=[]) {
+		$p = array_merge([
+			'status' => 0,
+			'type' => 0, // Defaults to normal user
+			'is_loggedin' => 0,
+			'phone' => '',
+			'cellphone' => '',
+			'city' => '',
+			'suburb' => '',
+			'proof_income' => ''
+		], $_params);
+		$uid = DB::table('users')->insertGetId([
+			'email' => trim($p['email']),
+			'password' => bcrypt($p['password']),
+			'type' => intval($p['type']),
+			'is_loggedin' => intval($p['is_loggedin'])
+		]);
+		if (! $uid) {
+			xplog('Unable to add user with email "'.trim($p['email']).'"', __METHOD__);
+			return false;
+		}
+		$res = DB::table('user_details')->insert([
+			'users_id' => $uid,
+			'fname' => trim($p['fname']),
+			'lname' => trim($p['lname']),
+			'phone' => trim($p['phone']),
+			'cellphone' => trim($p['cellphone']),
+			'city' => trim($p['city']),
+			'suburb' => trim($p['suburb']),
+			'proof_income' => trim($p['proof_income'])
+		]);
+		// See: http://stackoverflow.com/questions/18424122/how-to-know-if-a-query-fails-in-laravel-4
+		if ($res === false) { 
+			xplog('Unable to add user details with id "'.$uid.'"', __METHOD__); 
+			return false;
+		}
+		return $uid;
+	}
+	
 }

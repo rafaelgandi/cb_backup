@@ -18,10 +18,10 @@ class ApiController extends WasabiBaseController {
 		try { // See: http://www.w3schools.com/php/php_exception.asp
 			if ($request->isMethod('post')) {
 				$p = $request->all();
-				App\Cb\Api::setParams($p)->authenticate(); // Make sure required data is passed to the api
+				App\Cb\Api::setPost($p)->authenticate(); // Make sure required data is passed to the api
 				$api_map = [
 					// Add the necessary api maps here //
-					'check' => 'App\Cb\Api::check'.
+					'check' => 'App\Cb\Api::check',
 					'get_user_auth_details' => 'App\Cb\Api::getUserAuthDetails'
 				];
 				if (! isset($api_map[$p['api_name']])) {

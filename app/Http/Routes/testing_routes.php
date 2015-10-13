@@ -32,6 +32,13 @@ Route::get('/sessions', function () {
 	_pr(session()->all());
 });
 
+Route::get('/email', function () {
+	var_dump(Mail::send('emails.signup_confirmation', ['user' => 'test'], function ($m) {
+		$m->to('rafael@sushidigital.com.au', 'Raffy')->subject('CLEVERBONS TEST EMAIL');
+		$m->from('us@example.com', 'Laravel');
+	}));
+});
+
 
 Route::get('/testing', function () {
 	echo App\Cb\RealTime::foo();
