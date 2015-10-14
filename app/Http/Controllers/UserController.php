@@ -15,7 +15,7 @@ class UserController extends WasabiBaseController {
     public function __construct() {
 		//$current_user_type = (session()->has('current_user_type')) ? session('current_user_type') : false;
 		view()->share([
-			'title' => 'Ink In Time',
+			'title' => 'AuctionApp',
 			'CB_PAGE_JS' => [],
 			'CB_PAGE_CSS' => []
 		]);
@@ -78,6 +78,13 @@ class UserController extends WasabiBaseController {
 					throw new Exception($err_msg);
 				}
 				if (App\Cb\Users::emailExists($p['email'])) { throw new Exception('Sorry the email address your provided is already registered in our system.'); }
+				if (isset($p['is_agent']) && intval($p['is_agent']) === 1) {
+					$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
+					// Check if file is a valid image //
+					if (trim($_FILES['company_logo']['name']) === '' || ! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
+						throw new Exception('Please upload a valid logo');
+					}
+				}	
 				$user_id = App\Cb\Users::add([
 					'email' => $p['email'],
 					'password' => $p['password'],
@@ -105,18 +112,25 @@ class UserController extends WasabiBaseController {
 					if (! $user_id ) {
 						throw new Exception('Unable to save your company details. Please check your connection and try again.');
 					}
-					$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
-					// Checko if file is a valid image //
-					if (! isset($_FILES['company_logo']) || ! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
-						throw new Exception('Please upload a valid logo');
-					}				
+					// Save the uploaded logo for his/her company //		
 					$logo_saved = App\Cb\Users\Company::saveLogo($user_id, $_FILES['company_logo']);
 				}
-				/* @BOOKMARK: TODO more stuff here */
-				_pr($p);
-				
-				
-				
+				// Send confimation email here //
+				$confirmation_sent = App\Cb\Notifications\Email::signUpConfirmation([
+					'uid' => $user_id,
+					'fname' => $p['fname'],
+					'email' => $p['email']
+				]);
+				if (! $confirmation_sent) {
+					xplog('Unable to send confirmation email for user "'.$user_id.'"');
+					throw new Exception('Unable to send your confirmation email.');
+				}
+				// Send success message //
+				$request->session()->flash('sys_message', [
+					'message' => 'A verification email has been sent to '.$p['email'],
+					'redirect' => ['Sign In' => route('login')]
+				]);
+				return redirect(route('sys_message'));				
 			}
 			catch (Exception $err) {
 				$data['cb_err_msg'] = $err->getMessage();
@@ -124,5 +138,33 @@ class UserController extends WasabiBaseController {
 		}
 		$data['post'] = $p;
 		return View::make('user_signup', $data)->render();
+	}
+	
+	public function myAccount(Request $request) {
+		if (! Auth::check()) { // If the user is already logged in then redirect to landing page. 	
+			return redirect(route('login'));
+		}
+		$p = [
+			'fname' => '', 
+			'lname' => '',
+			'email' => '',
+			'password' => '',
+			'cpassword' => '',
+			'phone' => '',
+			'cell' => '',
+			'is_agent' => '0',
+			'company_name' => '',
+			'company_street' => '',
+			'company_state' => 'ACT',
+			'company_phone' => '',
+			'company_abn' => '',
+			'company_city' => '',
+			'company_postcode' => '',
+			'company_color' => '',
+			'terms' => '1'
+		];
+		$data = [];
+		view()->share(['title' => 'My Account']);
+		return View::make('myaccount', $data)->render();
 	}
 }

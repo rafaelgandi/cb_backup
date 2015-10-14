@@ -33,6 +33,7 @@ Route::get('/sessions', function () {
 });
 
 Route::get('/email', function () {
+	die('turned off');
 	var_dump(Mail::send('emails.signup_confirmation', ['user' => 'test'], function ($m) {
 		$m->to('rafael@sushidigital.com.au', 'Raffy')->subject('CLEVERBONS TEST EMAIL');
 		$m->from('us@example.com', 'Laravel');
@@ -41,7 +42,9 @@ Route::get('/email', function () {
 
 
 Route::get('/testing', function () {
-	echo App\Cb\RealTime::foo();
+	//echo App\Cb\RealTime::foo();
+	//abort(404);
+	_pr(App\Cb\Users::getDetailsById(1));
 });
 
 

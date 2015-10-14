@@ -6,6 +6,7 @@ use App\Cb;
 use Exception;
 use DB; // See: http://laravel.com/docs/5.1/database
 use PubSub; // See: http://baylorrae.com/php-pubsub/
+use Auth;
 
 class Users extends App\Cb\Base {
 	public static function instance() { return parent::getInstance(); }
@@ -13,8 +14,16 @@ class Users extends App\Cb\Base {
 	protected function getDetailsById($_user_id) {
 		$uid = intval($_user_id);
 		if ($uid < 1) { return false; }
-		$res = DB::table('users')->where('id', $uid)->first();
-		if ($res) { return $res; }
+		$res = DB::table('users')	
+		->select('users.*', 'user_details.*')
+		->join('user_details', function ($join) {
+			$join->on('users.id', '=', 'user_details.users_id');
+		})
+		->where('id', $uid)
+		->first();
+		if ($res) {
+			return $res;
+		}
 		return false;
 	}
 	
@@ -22,6 +31,18 @@ class Users extends App\Cb\Base {
 		$e = trim($_email);
 		$res = DB::table('users')->where('email', $e)->first();
 		return !! $res;
+	}
+	
+	protected function confirmAccount($_user_id) {
+		$uid = intval($_user_id);
+		if ($uid < 1) { return false; }
+		$row = DB::table('users')->where('id', $uid)->update([
+			'status' => 1
+		]);
+		if (! $row) {
+			xplog('Unable to confirm account for user "'.$uid.'"', __METHOD__);
+		}
+		return true;
 	}
 	
 	protected function add($_params=[]) {
@@ -61,6 +82,24 @@ class Users extends App\Cb\Base {
 			return false;
 		}
 		return $uid;
+	}
+	
+	protected function authenticate($_email, $_password) {
+		$e = trim($_email);
+		$pw = trim($_password);
+		$auth = Auth::attempt(['email' => $e, 'password' => $pw]);
+		if (! $auth) { return false; }
+		$curr_user_details = Auth::user();
+		if (intval($curr_user_details->type) === 0) { // Normal user
+			if (intval($curr_user_details->status) === 0) {
+				$user_id = intval($curr_user_details->id);
+				session()->flush();
+				Auth::logout();
+				// Returns the user id if user has not yet activated his/her account //
+				return $user_id; 
+			}
+		}
+		return $curr_user_details;
 	}
 	
 }

@@ -121,5 +121,10 @@ return [
     */
 
     'pretend' => false,
+	
+	'app_from' => [
+		'email' => 'auction@cleverbons.local',
+		'name' => 'Auction App'
+	]
 
 ];
