@@ -32,7 +32,9 @@ class WasabiBaseController extends Controller {
 		}
 		else if ($user_type === 0) { // Normal user
 			// TODO: change this to real landing page
-			return route('my_account');
+			return route('my_account', [
+				'uid' => App\Crypt::urlencode(session()->get('current_user')->id)
+			]);
 		}
 		else { return url(); } // If all else fails.. redirect to home page
 	}

@@ -83,4 +83,17 @@ class Company extends App\Cb\Base {
 		}
 		return $uid;
 	}
+	
+	protected function getDetailsByUserId($_user_id) {
+		$uid = intval($_user_id);
+		if ($uid <= 0) {
+			xplog('Invalid user id given', __METHOD__);
+			return false;
+		}
+		$res = DB::table('user_company_details')
+		->where('users_id', $uid)
+		->first();
+		if (! $res) { return false; }
+		return $res;
+	}
 }

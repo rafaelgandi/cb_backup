@@ -22,7 +22,12 @@ class AuthController extends WasabiBaseController {
 		}
 		$p = ['email' => '', 'password' => ''];
 		$data = [];
-		view()->share(['title' => 'Log In']);
+		view()->share([
+			'title' => 'Log In',
+			'CB_PAGE_JS' => [
+				url('/js/mods/Cb.Notify.js')
+			]
+		]);
 		if ($request->isMethod('post') && $request->has('submit')) {
 			$p = $request->all();
 			// See: https://github.com/Respect/Validation/blob/master/docs/README.md
@@ -50,7 +55,7 @@ class AuthController extends WasabiBaseController {
 				return redirect($this->landingPage($auth_response->type));
 			}
 			catch (Exception $err) {
-				$data['cb_err_msg'] = $err->getMessage();
+				cb_set_message($err->getMessage(), 0);
 			}
 		}
 		$data['post'] = $p;

@@ -11,3 +11,4 @@
 [14-Oct-2015 07:57:55 UTC] PHP Fatal error:  Maximum execution time of 30 seconds exceeded in C:\xampp\htdocs\cleverbons\vendor\swiftmailer\swiftmailer\lib\classes\Swift\Transport\StreamBuffer.php on line 163
 [14-Oct-2015 08:05:31 UTC] PHP Fatal error:  Class 'App\Http\Controllers\Exception' not found in C:\xampp\htdocs\cleverbons\app\Http\Controllers\AuthController.php on line 38
 [14-Oct-2015 08:09:11 UTC] PHP Parse error:  syntax error, unexpected ';', expecting ']' in C:\xampp\htdocs\cleverbons\app\Http\Controllers\AuthController.php on line 41
+[15-Oct-2015 02:12:58 UTC] PHP Parse error:  syntax error, unexpected ''CB_JS_TRANSPORT'' (T_CONSTANT_ENCAPSED_STRING), expecting ']' in C:\xampp\htdocs\cleverbons\app\Http\Controllers\UserController.php on line 184

@@ -40,5 +40,5 @@ function delete_all_files($_dir) {
     return true;
 }
 
-// Helpers that are common to the whole ink in time application //
-//include_once 'ink_helpers.php';
+// Helpers that are common to the whole cleverbons application //
+include_once 'cb_helpers.php';

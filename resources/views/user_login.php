@@ -1,5 +1,11 @@
 <?php echo View::make('_header')->render(); ?>
-<?php echo (isset($cb_err_msg)) ? '<span style="color:red;">'.$cb_err_msg.'</span>' : '';?>
+<?php cb_message_markup();?>
+
+
+<style type="text/css">
+	label { display: block; }
+</style>
+
 <form action="" method="post">
 	<label>Email</label>
 	<input type="email" name="email" value="<?php echo $post['email'];?>">

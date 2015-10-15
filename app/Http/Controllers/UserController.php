@@ -23,7 +23,7 @@ class UserController extends WasabiBaseController {
 	
 	public function signup(Request $request) {
 		if (Auth::check()) { // If the user is already logged in then redirect to landing page. 	
-			//return redirect();
+			return redirect($this->landingPage());
 		}
 		$p = [
 			'fname' => '', 
@@ -45,7 +45,12 @@ class UserController extends WasabiBaseController {
 			'terms' => '1'
 		];
 		$data = [];
-		view()->share(['title' => 'Sign Up']);
+		view()->share([
+			'title' => 'Sign Up',
+			'CB_PAGE_JS' => [
+				url('/js/mods/Cb.Notify.js')
+			]
+		]);
 		$data['aus_states'] = config('cleverbons.aus_states');
 		if ($request->isMethod('post') && $request->has('submit')) {
 			$p = $request->all();
@@ -74,16 +79,19 @@ class UserController extends WasabiBaseController {
 				if (in_array(false, $checks)) {
 					$err_msg = 'Some required field(s) have invalid values.';
 					if ($checks['terms'] === false) { $err_msg = 'You did not agree to the terms and conditions.'; }
-					if ($checks['cpassword'] === false) { $err_msg = 'Password mismatch.'; }	
+					if ($checks['cpassword'] === false && trim($p['password']) !== '') { $err_msg = 'Password mismatch.'; }	
 					throw new Exception($err_msg);
 				}
 				if (App\Cb\Users::emailExists($p['email'])) { throw new Exception('Sorry the email address your provided is already registered in our system.'); }
 				if (isset($p['is_agent']) && intval($p['is_agent']) === 1) {
-					$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
-					// Check if file is a valid image //
-					if (trim($_FILES['company_logo']['name']) === '' || ! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
-						throw new Exception('Please upload a valid logo');
-					}
+					if (isset($_FILES['company_logo']['name']) && trim($_FILES['company_logo']['name']) !== '') {
+						$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
+						// Check if file is a valid image //
+						if (! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
+							throw new Exception('Please upload a valid logo');
+						}
+						$has_uploaded_a_logo = true;	
+					}				
 				}	
 				$user_id = App\Cb\Users::add([
 					'email' => $p['email'],
@@ -106,14 +114,18 @@ class UserController extends WasabiBaseController {
 						'state' => $p['company_state'],
 						'postcode' => $p['company_postcode'],
 						'phone' => $p['company_phone'],
-						'logo' => '', /* @BOOKMARK: TODO add the logo filename here */
+						'logo' => '', // To be added later in App\Cb\Users\Company::saveLogo()
 						'primary_color' => $p['company_color']
 					]);
 					if (! $user_id ) {
 						throw new Exception('Unable to save your company details. Please check your connection and try again.');
 					}
-					// Save the uploaded logo for his/her company //		
-					$logo_saved = App\Cb\Users\Company::saveLogo($user_id, $_FILES['company_logo']);
+					if (isset($has_uploaded_a_logo)) {
+						// Save the uploaded logo for his/her company //		
+						if(! App\Cb\Users\Company::saveLogo($user_id, $_FILES['company_logo'])) {
+							xplog('Unable to save logo file for user "'.$user_id.'"', __METHOD__);
+						}
+					}					
 				}
 				// Send confimation email here //
 				$confirmation_sent = App\Cb\Notifications\Email::signUpConfirmation([
@@ -133,38 +145,65 @@ class UserController extends WasabiBaseController {
 				return redirect(route('sys_message'));				
 			}
 			catch (Exception $err) {
-				$data['cb_err_msg'] = $err->getMessage();
+				cb_set_message($err->getMessage(), 0);
 			}		
 		}
 		$data['post'] = $p;
 		return View::make('user_signup', $data)->render();
 	}
 	
-	public function myAccount(Request $request) {
-		if (! Auth::check()) { // If the user is already logged in then redirect to landing page. 	
-			return redirect(route('login'));
-		}
+	public function myAccount(Request $request, $uid) {
+		if (! Auth::check()) { return redirect(route('logout')); } // Make sure user is already logged in
+		$uid = intval(App\Crypt::urldecode($uid));
+		if ($uid < 1) { abort(404); } // Redirect to 404 page if user id is unknown
+		$user_details = App\Cb\Users::getDetailsById($uid);
+		if (! $user_details) { abort(404); } // Make sure user details is available
 		$p = [
-			'fname' => '', 
-			'lname' => '',
-			'email' => '',
-			'password' => '',
-			'cpassword' => '',
-			'phone' => '',
-			'cell' => '',
-			'is_agent' => '0',
+			'fname' => $user_details->fname, 
+			'lname' => $user_details->lname,
+			'email' => $user_details->email,
+			'phone' => $user_details->phone,
+			'cell' => $user_details->cellphone,
 			'company_name' => '',
 			'company_street' => '',
-			'company_state' => 'ACT',
+			'company_state' => '',
 			'company_phone' => '',
 			'company_abn' => '',
 			'company_city' => '',
 			'company_postcode' => '',
-			'company_color' => '',
-			'terms' => '1'
+			'company_color' => ''
 		];
+		$company_details = App\Cb\Users\Company::getDetailsByUserId($user_details->id);
+		if ($company_details) {
+			$company_info = [
+				'company_name' => $company_details->name,
+				'company_street' => $company_details->street,
+				'company_state' => $company_details->state,
+				'company_phone' => $company_details->phone,
+				'company_abn' => $company_details->abn,
+				'company_city' => $company_details->city,
+				'company_postcode' => $company_details->postcode,
+				'company_color' => $company_details->primary_color,
+				'company_logo' => $company_details->logo
+			];
+			$p = array_merge($p, $company_info);
+		}
+		//_pr($company_details);
 		$data = [];
-		view()->share(['title' => 'My Account']);
+		view()->share([
+			'title' => 'My Account',
+			'CB_PAGE_JS' => [
+				url('/js/mods/Cb.Notify.js')
+			],
+			'CB_JS_TRANSPORT' => [
+				'testing' => [1,2,3]
+			]
+		]);
+		$data['aus_states'] = config('cleverbons.aus_states');
+		
+		
+		//cb_set_message('testing messageggggg', 0);
+		$data['post'] = $p;
 		return View::make('myaccount', $data)->render();
 	}
 }

@@ -1,6 +1,12 @@
 <?php echo View::make('_header')->render(); ?>
+<?php cb_message_markup();?>
 
-<?php echo (isset($cb_err_msg)) ? '<span style="color:red;">'.$cb_err_msg.'</span>' : '';?>
+
+<style type="text/css">
+	label { display: block; }
+</style>
+
+
 <form action="" method="post" enctype="multipart/form-data">
 	
 	<label>First Name</label>
