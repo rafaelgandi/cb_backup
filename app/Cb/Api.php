@@ -42,15 +42,41 @@ class Api extends App\Cb\Base {
 		return true;
 	}
 	
+	protected function req($_post=[], $_requried_keys=[], $_msg='Missing some required field(s).') {
+		foreach ($_requried_keys as $key) {
+			if (! isset($_post[$key]) || trim($_post[$key]) === '') {
+				$this->error($_msg);
+				return false;
+			}
+		}
+		return $this;
+	}
+	
 	/*//////////////////////////////////////////////////////////////////////////////// 
-		API: get_user_auth_details
+		API: user_authenticate
 		@param:  email
 		@param:  password
-		@return: {"success":<array>}
-	*/////////////////////////////////////////////////////////////////////////////////
-	protected function getUserAuthDetails($_post) {
+		@return: payload <object> - User details
+ 	*/////////////////////////////////////////////////////////////////////////////////
+	protected function userAuthenticate($_post) {
+		$p = $_post;
+		$this->req($p, ['email', 'password']);
+		$auth_response = App\Cb\Users::authenticate($p['email'], $p['password'], true);
+		if (! is_object($auth_response)) {
+			if (is_numeric($auth_response)) {
+				// $auth_response <-- is user id in this context
+				$resend_link = route('resend_signup_confirmation', [
+					'uid' => App\Crypt::urlencode($auth_response)
+				]);
+				$this->error('Please verify your account. Click <a href="'.$resend_link.'">here</a> to resend the confirmation email');
+			}
+			$this->error('Invalid email or password');
+		}
+		$user_details = App\Cb\Users::getDetailsById($auth_response->id);
+		if (! $user_details) { $this->error('Unable to find user details.'); }
 		return [
-			'payload' => $_post['api_name']
+			'api_name' => $_post['api_name'],
+			'payload' => $user_details
 		];
 	}
 }

@@ -22,7 +22,9 @@ class ApiController extends WasabiBaseController {
 				$api_map = [
 					// Add the necessary api maps here //
 					'check' => 'App\Cb\Api::check',
-					'get_user_auth_details' => 'App\Cb\Api::getUserAuthDetails'
+					'user_authenticate' => 'App\Cb\Api::userAuthenticate',
+					'add_user' => 'App\Cb\Api\Users::addUser',
+					'update_user' => 'App\Cb\Api\Users::updateUser',
 				];
 				if (! isset($api_map[$p['api_name']])) {
 					throw new App\Cb\Api\Exceptyon('API "'.$p['api_name'].'" is unknown');

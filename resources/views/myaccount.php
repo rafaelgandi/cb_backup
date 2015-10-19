@@ -22,15 +22,11 @@ My account page <a href="<?php echo route('logout');?>">logout</a>
 	<label>Last Name</label>
 	<input type="text" name="lname" value="<?php echo $post['lname'];?>">
 	<label>Email</label>
-	<input type="email" name="email" value="<?php echo $post['email'];?>">
+	<input type="email" name="email" readonly value="<?php echo $post['email'];?>">
 	<label>Phone</label>
 	<input type="text" name="phone" value="<?php echo $post['phone'];?>">
 	<label>Mobile</label>
 	<input type="text" name="cell" value="<?php echo $post['cell'];?>">
-	
-	<label>Is Agent?</label>
-	<input type="checkbox" name="is_agent" <?php echo (isset($post['is_agent']) && intval($post['is_agent']) === 1) ? 'checked' : '';?> value="1">
-	
 	<label>Company Name</label>
 	<input type="text" name="company_name" value="<?php echo $post['company_name'];?>">
 	<label>Company Street</label>
@@ -58,14 +54,16 @@ My account page <a href="<?php echo route('logout');?>">logout</a>
 	<input type="text" name="company_postcode" value="<?php echo $post['company_postcode'];?>">
 	<label>Company Logo</label>
 	<input type="file" name="company_logo" >
+	<input type="hidden" name="company_logo_filename" value="<?php echo $post['company_logo_filename'];?>">
+	<img src="<?php echo $logo_dir.'/'.$post['company_logo_filename'];?>" style="width:100px;height:80px;">
+	
 	<label>Company Color</label>
 	<input type="text" name="company_color" value="<?php echo $post['company_color'];?>">
-	<label>Terms and Conditions</label>
-	<input type="checkbox" checked name="terms" <?php echo (isset($post['terms']) && intval($post['terms']) === 1) ? 'checked' : '';?> value="1">
+	
 	<br>
 	<br>
 	<input type="hidden" name="_token" id="token" value="<?php echo csrf_token(); ?>">
-	<input type="submit" name="submit" value="Sign Up">
+	<input type="submit" name="submit" value="Update">
 </form>
 
 <?php echo View::make('_footer')->render(); ?>

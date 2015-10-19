@@ -117,7 +117,7 @@ class UserController extends WasabiBaseController {
 						'logo' => '', // To be added later in App\Cb\Users\Company::saveLogo()
 						'primary_color' => $p['company_color']
 					]);
-					if (! $user_id ) {
+					if (! $company_details ) {
 						throw new Exception('Unable to save your company details. Please check your connection and try again.');
 					}
 					if (isset($has_uploaded_a_logo)) {
@@ -184,7 +184,7 @@ class UserController extends WasabiBaseController {
 				'company_city' => $company_details->city,
 				'company_postcode' => $company_details->postcode,
 				'company_color' => $company_details->primary_color,
-				'company_logo' => $company_details->logo
+				'company_logo_filename' => $company_details->logo
 			];
 			$p = array_merge($p, $company_info);
 		}
@@ -200,9 +200,83 @@ class UserController extends WasabiBaseController {
 			]
 		]);
 		$data['aus_states'] = config('cleverbons.aus_states');
-		
-		
-		//cb_set_message('testing messageggggg', 0);
+		if ($request->isMethod('post') && $request->has('submit')) {
+			$p = $request->all();
+			// See: https://github.com/Respect/Validation/blob/master/docs/VALIDATORS.md
+			$checks = [];
+			$checks['fname'] = Valid::string()->notEmpty()->validate($p['fname']);
+			$checks['lname'] = Valid::string()->notEmpty()->validate($p['lname']);
+			//$checks['email'] = Valid::email()->notEmpty()->validate($p['email']);			
+			$checks['phone'] = Valid::string()->notEmpty()->validate($p['phone']);
+			$checks['cell'] = Valid::string()->notEmpty()->validate($p['cell']);
+			if (isset($p['company_name']) && trim($p['company_name']) !== '') {
+				$checks['company_name'] = Valid::string()->notEmpty()->validate($p['company_name']);
+				$checks['company_street'] = Valid::string()->notEmpty()->validate($p['company_street']);
+				$checks['company_state'] = Valid::string()->notEmpty()->validate($p['company_state']);
+				$checks['company_phone'] = Valid::string()->notEmpty()->validate($p['company_phone']);	
+				$checks['company_abn'] = Valid::string()->notEmpty()->validate($p['company_abn']);	
+				$checks['company_city'] = Valid::string()->notEmpty()->validate($p['company_city']);	
+				$checks['company_postcode'] = Valid::string()->notEmpty()->validate($p['company_postcode']);	
+				$checks['company_color'] = Valid::string()->notEmpty()->validate($p['company_color']);
+			}
+			try {
+				if (in_array(false, $checks)) {
+					throw new Exception('Some required field(s) have invalid values.');
+				}
+				if (trim($p['email']) !== $user_details->email) {
+					if (App\Cb\Users::emailExists($p['email'])) { 
+						throw new Exception('Sorry the email address your provided is already registered in our system.'); 
+					}
+				}
+				if (isset($_FILES['company_logo']['name']) && trim($_FILES['company_logo']['name']) !== '') {
+					$uploaded_image_ext = App\Upload::getExtension($_FILES['company_logo']);
+					// Check if file is a valid image //
+					if (! in_array($uploaded_image_ext, config('cleverbons.files.allowed_images'))) {
+						throw new Exception('Please upload a valid logo.');
+					}
+					$has_uploaded_a_logo = true;	
+				}
+				// Update user details //
+				$updated_user_details = App\Cb\Users::update($user_details->id, [
+					'fname' => $p['fname'],
+					'lname' => $p['lname'],
+					'phone' => $p['phone'],
+					'cellphone' => $p['cell']
+				]);
+				if (! $updated_user_details) {
+					throw new Exception('Unable to save your details. Please reload your page and try again.');
+				}
+				if (isset($has_uploaded_a_logo)) {
+					// Save the uploaded logo for his/her company //
+					$logo_filename = App\Cb\Users\Company::saveLogo($user_details->id, $_FILES['company_logo']);	
+					if(! $logo_filename) {
+						xplog('Unable to save logo file for user "'.$user_details->id.'"', __METHOD__);
+					}
+					$p['company_logo_filename'] = $logo_filename;
+				}
+				// Update user company details //
+				$updated_company_details = App\Cb\Users\Company::update($user_details->id, [
+					'name' => $p['company_name'],
+					'abn' => $p['company_abn'],
+					'street' => $p['company_street'],
+					'city' => $p['company_city'],
+					'state' => $p['company_state'],
+					'postcode' => $p['company_postcode'],
+					'phone' => $p['company_phone'],
+					'primary_color' => $p['company_color']
+				]);
+				if (! $updated_company_details) {
+					throw new Exception('Unable to save your company details. Please reload your page and try again.');
+				}
+				// Successfully updated everything //
+				cb_set_message('Successfully updated your details', 1);
+			}
+			catch (Exception $err) {
+				cb_set_message($err->getMessage(), 0);
+			}
+			
+		}	
+		$data['logo_dir'] = App\Cb\Users\Company::getLogoDirBaseUri();
 		$data['post'] = $p;
 		return View::make('myaccount', $data)->render();
 	}

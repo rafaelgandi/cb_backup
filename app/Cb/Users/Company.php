@@ -10,9 +10,16 @@ use PubSub; // See: http://baylorrae.com/php-pubsub/
 class Company extends App\Cb\Base {
 	public static function instance() { return parent::getInstance(); }
 	private $logo_dir = '';
+	private $logo_dir_baseuri = '';
 	
 	protected function __construct() {
-		$this->logo_dir = App\Files::makeDirIfNotExists(public_path('uploads/company_logos'));
+		$dir = 'uploads/company_logos';
+		$this->logo_dir = App\Files::makeDirIfNotExists(public_path($dir));
+		$this->logo_dir_baseuri = url('/'.$dir);
+	}
+	
+	protected function getLogoDirBaseUri() {
+		return $this->logo_dir_baseuri;
 	}
 
 	protected function add($_user_id, $_params=[]) {
@@ -58,6 +65,13 @@ class Company extends App\Cb\Base {
 			xplog('Invalid user id given', __METHOD__);
 			return false;
 		}
+		$user_company_details = $this->getDetailsByUserId($uid);
+		// If logo already exists then delete the file first //
+		if (!! $user_company_details && trim($user_company_details->logo) !== '') {
+			if (App\Files::isFile($this->logo_dir.'/'.$user_company_details->logo)) {
+				App\Cb\Files::deleteAllInstance($this->logo_dir.'/'.$user_company_details->logo);
+			}
+		}
 		if (! $_base64_data) {
 			$uploaded_image_details = App\Upload::save($_file, [
 				'destination' => $this->logo_dir.'/'
@@ -81,7 +95,7 @@ class Company extends App\Cb\Base {
 			xplog('Unable to save logo in the database', __METHOD__);
 			return false;
 		}
-		return $uid;
+		return $uploaded_image_details->coded_name;
 	}
 	
 	protected function getDetailsByUserId($_user_id) {
@@ -95,5 +109,16 @@ class Company extends App\Cb\Base {
 		->first();
 		if (! $res) { return false; }
 		return $res;
+	}
+	
+	protected function update($_user_id, $_data=[]) {
+		$uid = intval($_user_id);
+		if ($uid < 1) { return false; }
+		$row = DB::table('user_company_details')->where('users_id', $uid)->update($_data);
+		if (! is_numeric($row)) { 
+			xplog('Unable to update user_details table for user "'.$uid.'"', __METHOD__); 
+			return false; 
+		}
+		return true;
 	}
 }

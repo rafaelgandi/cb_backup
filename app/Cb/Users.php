@@ -45,6 +45,28 @@ class Users extends App\Cb\Base {
 		return true;
 	}
 	
+	protected function authenticate($_email, $_password, $_checkonly=false) {
+		$e = trim($_email);
+		$pw = trim($_password);	
+		$auth = Auth::attempt(['email' => $e, 'password' => $pw]);
+		if (! $auth) { return false; }
+		$curr_user_details = Auth::user();
+		if (intval($curr_user_details->type) === 0) { // Normal user
+			if (intval($curr_user_details->status) === 0) {
+				$user_id = intval($curr_user_details->id);
+				session()->flush();
+				Auth::logout();
+				// Returns the user id if user has not yet activated his/her account //
+				return $user_id; 
+			}
+		}
+		if (!! $_checkonly) { // Dont log in the user. Usually used with the api
+			session()->flush();
+			Auth::logout();
+		}
+		return $curr_user_details;
+	}
+	
 	protected function add($_params=[]) {
 		$p = array_merge([
 			'status' => 0,
@@ -84,22 +106,16 @@ class Users extends App\Cb\Base {
 		return $uid;
 	}
 	
-	protected function authenticate($_email, $_password) {
-		$e = trim($_email);
-		$pw = trim($_password);
-		$auth = Auth::attempt(['email' => $e, 'password' => $pw]);
-		if (! $auth) { return false; }
-		$curr_user_details = Auth::user();
-		if (intval($curr_user_details->type) === 0) { // Normal user
-			if (intval($curr_user_details->status) === 0) {
-				$user_id = intval($curr_user_details->id);
-				session()->flush();
-				Auth::logout();
-				// Returns the user id if user has not yet activated his/her account //
-				return $user_id; 
-			}
+	protected function update($_user_id, $_data=[]) {
+		$uid = intval($_user_id);
+		if ($uid < 1) { return false; }
+		// We only update the user_details table here as the users table should only be
+		// updated by the code not the user.
+		$row = DB::table('user_details')->where('users_id', $uid)->update($_data);
+		if (! is_numeric($row)) { 
+			xplog('Unable to update user_details table for user "'.$uid.'"', __METHOD__); 
+			return false; 
 		}
-		return $curr_user_details;
+		return true;
 	}
-	
 }

@@ -7,3 +7,105 @@ http://<MAY VARY PER SERVER>/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json
 Required parameters for all api:
 	* pass_key - 249c429fbdbcd5db8e7b7fce7e58cd92
 	* api_name - Name of the api you want to call.
+	
+If an issue is found the API will return this json: 
+{
+	api_name: <name of the api called>
+	error: <error message>
+}
+	
+	
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
+-----------------------
+API: user_authenticate
+-----------------------
+@param:  email
+@param:  password
+@return: <sample> 
+	{
+		"api_name" : "user_authenticate",
+		"payload" : {
+			"id" : 1,
+			"email" : "rafael@sushidigital.com.au",
+			"type" : 0,
+			"password" : "$2y$10$t7nrdmAEztf64cScZmQC1eqXpYADyuwQdIbGRcJW\/ohQf87TIdvd.",
+			"status" : 1,
+			"is_loggedin" : 0,
+			"created_at" : "2015-10-14 16:04:16",
+			"remember_token" : "92kFHrrG0z1AjYpDAFkT7v4LYV4XUrtr49z6tKN6ASTJHR8MUH6M1O7No0dD",
+			"users_id" : 1,
+			"fname" : "jack1",
+			"lname" : "doessss",
+			"phone" : "9999999999",
+			"cellphone" : "094325353488888888",
+			"city" : "",
+			"suburb" : "",
+			"proof_income" : ""
+		}
+	}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-----------------------
+API: add_user
+-----------------------
+@param: fname <required>
+@param: lname <required>
+@param: email <required>
+@param: password <required>
+@param: cpassword <required>
+@param: phone <required>
+@param: cell
+@param: is_agent <defaults to '0'> <required>
+@param: company_name <required>
+@param: company_street
+@param: company_state
+@param: company_phone <required>
+@param: company_abn <required>
+@param: company_city
+@param: company_postcode
+@param: company_color
+@param: terms <defaults to '0'> <required>
+@return: <sample> 
+	{
+		"api_name" : "add_user",
+		"payload" : {
+			"user_details" : {
+				"id" : 10,
+				"email" : "api10@sushidigital.com.au",
+				"type" : 0,
+				"password" : "$2y$10$wKhMYKYQIvD6ZGfLPF\/F2.TEnOeAZCzvWpf8XC\/fJMzPv6noqlCd2",
+				"status" : 0,
+				"is_loggedin" : 0,
+				"created_at" : "2015-10-19 15:16:29",
+				"remember_token" : "",
+				"users_id" : 10,
+				"fname" : "api10",
+				"lname" : "api10",
+				"phone" : "123458788979",
+				"cellphone" : "",
+				"city" : "",
+				"suburb" : "",
+				"proof_income" : ""
+			},
+			"company_details" : {
+				"users_id" : 10,
+				"name" : "api company",
+				"abn" : "65656565",
+				"street" : "asdfsaf",
+				"city" : "",
+				"state" : "WA",
+				"postcode" : "",
+				"phone" : "32323232",
+				"logo" : "file_j7653c08b5abc5be69e3c77a916b6df757653c08b5abc5be69e3c77a916b6df7.jpg",
+				"primary_color" : ""
+			}
+		}
+	}
+
+NOTE: "company_details" part of the payload will not be shown if their are no company details passed.
+
+
+
+
+
+
+
