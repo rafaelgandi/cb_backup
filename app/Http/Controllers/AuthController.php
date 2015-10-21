@@ -52,6 +52,7 @@ class AuthController extends WasabiBaseController {
 				// Successfully authenticated, save some details to session for faster access //
 				$request->session()->put('current_user', $auth_response);
 				$request->session()->put('current_user_type', $auth_response->type);
+				App\Cb\Users\Presence::setOnline($auth_response->id); // Set presence as online
 				return redirect($this->landingPage($auth_response->type));
 			}
 			catch (Exception $err) {
@@ -107,7 +108,14 @@ class AuthController extends WasabiBaseController {
 	}
 	
 	public function logout(Request $request) {
-		$request->session()->flush(); // Remove all session data. See: http://laravel.com/docs/5.1/session
+		if ($request->session()->has('current_user')) { // Make sure to get the currently logged in user
+			$current_user = $request->session()->get('current_user');
+			if ($current_user && isset($current_user->id)) {
+				// Set user presence to offline //
+				App\Cb\Users\Presence::setOffline($current_user->id); 
+			}			
+		}		
+		$request->session()->flush(); // Remove all session data. See: http://laravel.com/docs/5.1/session		
 		Auth::logout();
 		return redirect(url());
 	}

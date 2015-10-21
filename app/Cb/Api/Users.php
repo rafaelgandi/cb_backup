@@ -12,8 +12,24 @@ class Users extends App\Cb\Base {
 	
 	/*//////////////////////////////////////////////////////////////////////////////// 
 		API: add_user
-		@param:  email
-		@param:  password
+		@param: fname <required>
+		@param: lname <required>
+		@param: email <required>
+		@param: password <required>
+		@param: cpassword <required>
+		@param: phone <required>
+		@param: cell
+		@param: is_agent <defaults to '0'> <required>
+		@param: company_name <required>
+		@param: company_street
+		@param: company_state
+		@param: company_phone <required>
+		@param: company_abn <required>
+		@param: company_city
+		@param: company_postcode
+		@param: company_color
+		@param: company_logo
+		@param: terms <defaults to '0'> <required>
 		@return: payload <object> - User details
  	*/////////////////////////////////////////////////////////////////////////////////
 	protected function addUser($_post) {
@@ -73,6 +89,9 @@ class Users extends App\Cb\Base {
 					$has_uploaded_a_logo = true;	
 				}
 			}
+			else {
+				xplog('Invalid JSON string passed |'.$p['company_logo'].'|', __METHOD__);
+			}
 		}
 		$user_id = App\Cb\Users::add([
 			'email' => $p['email'],
@@ -98,13 +117,13 @@ class Users extends App\Cb\Base {
 			]);
 			if (! $company_details ) { App\Cb\Api::error('Unable to save company details'); }
 			if (isset($has_uploaded_a_logo)) {		
-				// Save the uploaded logo for his/her company //		
+				// Save the uploaded logo for his/her company //
+				// See: http://www.opinionatedgeek.com/dotnet/tools/Base64Encode/	
 				if(! App\Cb\Users\Company::saveLogo($user_id, $logo_details, true)) {
 					xplog('Unable to save logo file for user "'.$user_id.'"', __METHOD__);
 				}
 			}	
-		}
-		
+		}	
 		// Send confimation email here //
 		$confirmation_sent = App\Cb\Notifications\Email::signUpConfirmation([
 			'uid' => $user_id,
@@ -132,8 +151,98 @@ class Users extends App\Cb\Base {
 		return $res;
 	}
 	
+	/*//////////////////////////////////////////////////////////////////////////////// 
+		API: update_user
+		@param: user_id <required>
+		@param: fname <required>
+		@param: lname <required>
+		@param: email <required>
+		@param: phone <required>
+		@param: cell <required>
+		@param: company_name <required>
+		@param: company_street <required>
+		@param: company_state <required>
+		@param: company_phone <required>
+		@param: company_abn <required>
+		@param: company_city <required>
+		@param: company_postcode <required>
+		@param: company_color <required>
+		@param: company_logo
+		@return: payload <object> - User details
+ 	*/////////////////////////////////////////////////////////////////////////////////
 	protected function updateUser($_post) {
-		
-		return [];
+		$p = $_post;
+		// Fields that must be set //
+		App\Cb\Api::mustSet($p, [
+			'user_id', 'fname', 'lname', 'phone', 'cell', 'company_name', 
+			'company_street', 'company_state', 'company_phone', 'company_abn', 'company_city', 
+			'company_postcode', 'company_color'
+		]);
+		$uid = intval($p['user_id']);
+		if ($uid < 1) { App\Cb\Api::error('Invalid user id sent'); }
+		$user_details = App\Cb\Users::getDetailsById($uid);
+		if (! $user_details) { App\Cb\Api::error('Unable to find user details.'); }
+		// See: https://github.com/Respect/Validation/blob/master/docs/VALIDATORS.md
+		$checks = [];
+		$checks['fname'] = Valid::string()->notEmpty()->validate($p['fname']);
+		$checks['lname'] = Valid::string()->notEmpty()->validate($p['lname']);				
+		if (in_array(false, $checks)) { App\Cb\Api::error('Some required field(s) have invalid values.'); }
+		// Check the logo file passed //
+		if (isset($p['company_logo'])) {
+			if (App\Json::isValid($p['company_logo'])) {
+				// See: http://www.opinionatedgeek.com/dotnet/tools/Base64Encode/	
+				$logo_details = (object) App\Json::decode($p['company_logo']);
+				if (isset($logo_details->base64)) {
+					// Check if file is a valid image //
+					if (! in_array($logo_details->extension, config('cleverbons.files.allowed_images'))) {
+						App\Cb\Api::error('Please upload a valid logo');
+					}
+					$has_uploaded_a_logo = true;	
+				}
+			}
+			else {
+				xplog('Invalid JSON string passed |'.$p['company_logo'].'|', __METHOD__);
+			}
+		}
+		// Update user details //
+		$updated_user_details = App\Cb\Users::update($user_details->id, [
+			'fname' => $p['fname'],
+			'lname' => $p['lname'],
+			'phone' => $p['phone'],
+			'cellphone' => $p['cell']
+		]);
+		if (! $updated_user_details) { App\Cb\Api::error('Unable to save user details'); }		
+		// Update user company details //
+		$updated_company_details = App\Cb\Users\Company::update($user_details->id, [
+			'name' => $p['company_name'],
+			'abn' => $p['company_abn'],
+			'street' => $p['company_street'],
+			'city' => $p['company_city'],
+			'state' => $p['company_state'],
+			'postcode' => $p['company_postcode'],
+			'phone' => $p['company_phone'],
+			'primary_color' => $p['company_color']
+		]);
+		if (! $updated_company_details) { App\Cb\Api::error('Unable to save company details'); }
+		if (isset($has_uploaded_a_logo)) {
+			// Save the uploaded logo for his/her company //
+			// See: http://www.opinionatedgeek.com/dotnet/tools/Base64Encode/	
+			if(! App\Cb\Users\Company::saveLogo($user_details->id, $logo_details, true)) {
+				xplog('Unable to save logo file for user "'.$uid.'"', __METHOD__);
+			}
+		}
+		// Requery the newly updated user details //
+		$user_details = App\Cb\Users::getDetailsById($user_details->id);
+		$res = [
+			'api_name' => $_post['api_name'],
+			'payload' => [
+				'user_details' => $user_details
+			]
+		];
+		$user_company_details = App\Cb\Users\Company::getDetailsByUserId($user_details->id);
+		if (!! $user_company_details) {
+			$res['payload']['company_details'] = $user_company_details;
+		}
+		return $res;
 	}
 }

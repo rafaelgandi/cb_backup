@@ -246,14 +246,6 @@ class UserController extends WasabiBaseController {
 				if (! $updated_user_details) {
 					throw new Exception('Unable to save your details. Please reload your page and try again.');
 				}
-				if (isset($has_uploaded_a_logo)) {
-					// Save the uploaded logo for his/her company //
-					$logo_filename = App\Cb\Users\Company::saveLogo($user_details->id, $_FILES['company_logo']);	
-					if(! $logo_filename) {
-						xplog('Unable to save logo file for user "'.$user_details->id.'"', __METHOD__);
-					}
-					$p['company_logo_filename'] = $logo_filename;
-				}
 				// Update user company details //
 				$updated_company_details = App\Cb\Users\Company::update($user_details->id, [
 					'name' => $p['company_name'],
@@ -268,6 +260,15 @@ class UserController extends WasabiBaseController {
 				if (! $updated_company_details) {
 					throw new Exception('Unable to save your company details. Please reload your page and try again.');
 				}
+				// Update the user's logo file here //
+				if (isset($has_uploaded_a_logo)) {
+					// Save the uploaded logo for his/her company //
+					$logo_filename = App\Cb\Users\Company::saveLogo($user_details->id, $_FILES['company_logo']);	
+					if(! $logo_filename) {
+						xplog('Unable to save logo file for user "'.$user_details->id.'"', __METHOD__);
+					}
+					$p['company_logo_filename'] = $logo_filename;
+				}			
 				// Successfully updated everything //
 				cb_set_message('Successfully updated your details', 1);
 			}

@@ -114,6 +114,14 @@ class Company extends App\Cb\Base {
 	protected function update($_user_id, $_data=[]) {
 		$uid = intval($_user_id);
 		if ($uid < 1) { return false; }
+		if (! $this->getDetailsByUserId($uid)) { 
+			// If user has not added any company details, then add a 
+			// row first before doing an update.
+			DB::table('user_company_details')->insert([
+				'users_id' => $uid,
+				'primary_color' => '#cccccc' // Add default grey color
+			]);
+		}
 		$row = DB::table('user_company_details')->where('users_id', $uid)->update($_data);
 		if (! is_numeric($row)) { 
 			xplog('Unable to update user_details table for user "'.$uid.'"', __METHOD__); 

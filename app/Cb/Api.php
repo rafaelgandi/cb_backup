@@ -52,15 +52,27 @@ class Api extends App\Cb\Base {
 		return $this;
 	}
 	
+	protected function mustSet($_post=[], $_requried_keys=[], $_msg='Missing some required field(s).') {
+		foreach ($_requried_keys as $key) {
+			if (! isset($_post[$key])) {
+				$this->error($_msg);
+				return false;
+			}
+		}
+		return $this;
+	}
+	
 	/*//////////////////////////////////////////////////////////////////////////////// 
 		API: user_authenticate
 		@param:  email
 		@param:  password
+		@param:  token
+		@param:  os (android | ios)
 		@return: payload <object> - User details
  	*/////////////////////////////////////////////////////////////////////////////////
 	protected function userAuthenticate($_post) {
 		$p = $_post;
-		$this->req($p, ['email', 'password']);
+		$this->req($p, ['email', 'password', 'token', 'os']);
 		$auth_response = App\Cb\Users::authenticate($p['email'], $p['password'], true);
 		if (! is_object($auth_response)) {
 			if (is_numeric($auth_response)) {
@@ -68,10 +80,17 @@ class Api extends App\Cb\Base {
 				$resend_link = route('resend_signup_confirmation', [
 					'uid' => App\Crypt::urlencode($auth_response)
 				]);
-				$this->error('Please verify your account. Click <a href="'.$resend_link.'">here</a> to resend the confirmation email');
+				return [
+					'api_name' => $_post['api_name'],
+					'payload' => $resend_link
+				];
 			}
 			$this->error('Invalid email or password');
 		}
+		App\Cb\Users\Presence::setOnline($auth_response->id); // Set presence as online
+		// Save the token for this user //
+		App\Cb\Devices::add($auth_response->id, $p['token'], $p['os']);
+		xplog('Registered device token "'.$p['token'].'" for user "'.$auth_response->id.'" for os "'.$p['os'].'"', __METHOD__);
 		$user_details = App\Cb\Users::getDetailsById($auth_response->id);
 		if (! $user_details) { $this->error('Unable to find user details.'); }
 		return [
@@ -79,4 +98,30 @@ class Api extends App\Cb\Base {
 			'payload' => $user_details
 		];
 	}
+	
+	/*//////////////////////////////////////////////////////////////////////////////// 
+		API: logout
+		@param:  user_id
+		@param:  os (android | ios)
+		@return: payload <number> (1=success)
+ 	*/////////////////////////////////////////////////////////////////////////////////
+	protected function logout($_post) {
+		$p = $_post;
+		$this->req($p, ['user_id', 'os']);
+		$uid = intval($p['user_id']);
+		if ($uid < 1) { $this->error('Invalid user id sent'); }
+		$user_details = App\Cb\Users::getDetailsById($uid);
+		if (! $user_details) { $this->error('Unable to find user details.'); }
+		if (! App\Cb\Devices::removeByUserId($uid, $p['os'])) {
+			xplog('Unable to remove device token for user "'.$uid.'" for os "'.$p['os'].'"', __METHOD__);
+		}
+		// Set user presence to offline //
+		App\Cb\Users\Presence::setOffline($uid); 
+		return [
+			'api_name' => $_post['api_name'],
+			'payload' => 1
+		];
+	}
+	
+	
 }

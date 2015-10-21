@@ -23,6 +23,7 @@ class ApiController extends WasabiBaseController {
 					// Add the necessary api maps here //
 					'check' => 'App\Cb\Api::check',
 					'user_authenticate' => 'App\Cb\Api::userAuthenticate',
+					'logout' => 'App\Cb\Api::logout',
 					'add_user' => 'App\Cb\Api\Users::addUser',
 					'update_user' => 'App\Cb\Api\Users::updateUser',
 				];

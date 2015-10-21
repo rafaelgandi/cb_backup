@@ -8,12 +8,30 @@ Required parameters for all api:
 	* pass_key - 249c429fbdbcd5db8e7b7fce7e58cd92
 	* api_name - Name of the api you want to call.
 	
-If an issue is found the API will return this json: 
+If an issue is found the API will respond with this json format: 
 {
 	api_name: <name of the api called>
 	error: <error message>
 }
-	
+
+If the api request did not have any issue the response json would have the following format:
+{
+	api_name: <name of the api called>
+	payload: <stirng | object | array | boolean | number>
+}
+
+The "paload" property will contain the necessary data for that specific api.
+
+Base64 files passed should be a json encoded STRING value. Example json below:
+{
+	'some_file': "{
+		'base64': <base64 string data>,
+		'extension': <file extension (ie: jpg, doc, pdf)>,
+		'filename': <Name of the file (ie. blueprint.jpg )>,
+	}"
+}
+REMEBER: The value for the file should be a JSON ENCODED STRING.
+
 	
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 -----------------------
@@ -21,6 +39,8 @@ API: user_authenticate
 -----------------------
 @param:  email
 @param:  password
+@param:  token
+@param:  os (android | ios)
 @return: <sample> 
 	{
 		"api_name" : "user_authenticate",
@@ -43,6 +63,27 @@ API: user_authenticate
 			"proof_income" : ""
 		}
 	}
+	
+NOTE: If the user has not yet confirmed his/her account through the email the json response payload will be the activation link 
+for the users account. Example response would be:
+{
+	"api_name":"user_authenticate",
+	"payload":"http:\/\/cleverbons.local\/resend-signup-confirmation\/OUg3RFpXWTZIVldWb3VFb24wVXFZZEpXVnI2WWMyelJ4RGdHUXBOUE5LVT0="
+}	
+	
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-----------------------
+API: logout
+-----------------------
+@param:  user_id
+@param:  os (android | ios)
+@return: 
+	Sample:
+	{
+		"api_name": "logout",
+		"payload": 1 (1=successfully unregistered token and logged user out)
+	}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 -----------------------
 API: add_user
@@ -64,7 +105,8 @@ API: add_user
 @param: company_postcode
 @param: company_color
 @param: terms <defaults to '0'> <required>
-@return: <sample> 
+@return:
+	Sample:
 	{
 		"api_name" : "add_user",
 		"payload" : {
@@ -101,11 +143,69 @@ API: add_user
 		}
 	}
 
-NOTE: "company_details" part of the payload will not be shown if their are no company details passed.
+NOTE: "company_details" part of the payload will not be shown if there are no company details passed.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-----------------------
+API: update_user
+-----------------------
+@param: user_id <required>
+@param: fname <required>
+@param: lname <required>
+@param: email <required>
+@param: phone <must be set>
+@param: cell <must be set>
+@param: company_name <must be set>
+@param: company_street <must be set>
+@param: company_state <must be set>
+@param: company_phone <must be set>
+@param: company_abn <must be set>
+@param: company_city <must be set>
+@param: company_postcode <must be set>
+@param: company_color <must be set>
+@param: company_logo <json encoded string of file details>
+@return:
+	Sample:
+	{
+		"api_name" : "update_user",
+		"payload" : {
+			"user_details" : {
+				"id" : 1,
+				"email" : "jack1@sushidigital.com.au",
+				"type" : 0,
+				"password" : "$2y$10$t7nrdmAEztf64cScZmQC1eqXpYADyuwQdIbGRcJW\/ohQf87TIdvd.",
+				"status" : 1,
+				"is_loggedin" : 0,
+				"created_at" : "2015-10-14 16:04:16",
+				"remember_token" : "BnudcoR6a9Z5K168fv1b2WzIPqLezUWg7Rzb0pCbtYS0uJJDXnAL9FKHh1uG",
+				"users_id" : 1,
+				"fname" : "hhhhhh",
+				"lname" : "hhhhhh",
+				"phone" : "123458788979",
+				"cellphone" : "09324345435",
+				"city" : "",
+				"suburb" : "",
+				"proof_income" : ""
+			},
+			"company_details" : {
+				"users_id" : 1,
+				"name" : "coco company",
+				"abn" : "65656565",
+				"street" : "asdfsaf",
+				"city" : "sydney",
+				"state" : "NSW",
+				"postcode" : "43242",
+				"phone" : "32323232",
+				"logo" : "file_bb811458759edf156923cc7be5251a5a6b811458759edf156923cc7be5251a5a.png",
+				"primary_color" : "#kkkkkk"
+			}
+		}
+	}
 
 
+NOTE: "company_details" part of the payload will not be shown if there are no company details passed.
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
