@@ -18,3 +18,4 @@
 [19-Oct-2015 06:22:31 UTC] PHP Parse error:  syntax error, unexpected ';', expecting ')' in C:\xampp\htdocs\cleverbons\app\Http\Routes\api_testing_routes.php on line 136
 [21-Oct-2015 05:59:33 UTC] PHP Fatal error:  Class 'App\Devices' not found in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 82
 [21-Oct-2015 07:17:12 UTC] PHP Parse error:  syntax error, unexpected ''fname'' (T_CONSTANT_ENCAPSED_STRING), expecting ')' in C:\xampp\htdocs\cleverbons\app\Http\Routes\api_testing_routes.php on line 124
+[22-Oct-2015 07:52:39 UTC] PHP Parse error:  syntax error, unexpected ',' in C:\xampp\htdocs\cleverbons\app\Cb\Properties\Docs.php on line 30

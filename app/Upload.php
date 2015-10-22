@@ -70,7 +70,15 @@ class Upload extends App\Nkie12\NinDo {
 		return '';
 	}
 	
-	protected function reArrayFiles(&$file_post) {
+	protected function getExtensionFromFilename($_filename) {
+		$f = trim($_filename);
+		if ($f === '') { return ''; }
+		$pieces = explode('.', $_filename);
+		// See: http://laravel.com/docs/5.1/helpers#method-last
+		return last($pieces);
+	}
+	
+	protected function reArrayFiles($file_post) {
 		// Rearranges the multiple files super global array($_FILES)
 		// See: http://php.net/manual/en/features.file-upload.multiple.php#53240
 		$file_ary = array();
