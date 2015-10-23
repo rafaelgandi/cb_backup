@@ -6,5 +6,8 @@ return [
 	'files' => [
 		'allowed_images' => ['jpg', 'jpeg', 'gif', 'png', 'tiff', 'bmp'],
 		'allowed_docs' => ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'txt']
+	],
+	'properties' => [
+		'max_num_file_per_type' => 10
 	]
 ];

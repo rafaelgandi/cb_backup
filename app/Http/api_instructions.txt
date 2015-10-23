@@ -17,10 +17,10 @@ If an issue is found the API will respond with this json format:
 If the api request did not have any issue the response json would have the following format:
 {
 	api_name: <name of the api called>
-	payload: <stirng | object | array | boolean | number>
+	payload: <string | object | array | boolean | number>
 }
 
-The "paload" property will contain the necessary data for that specific api.
+The "payload" property will contain the necessary data for that specific api.
 
 Base64 files passed should be a json encoded STRING value. Example json below:
 {
@@ -64,8 +64,9 @@ API: user_authenticate
 		}
 	}
 	
-NOTE: If the user has not yet confirmed his/her account through the email the json response payload will be the activation link 
-for the users account. Example response would be:
+NOTE: If the user has not yet confirmed his/her account through the email the "status" property of the payload response object 
+will have a value of 0 and a "resend_link" property will be added to the response
+
 {
 	"api_name":"user_authenticate",
 	"payload":"http:\/\/cleverbons.local\/resend-signup-confirmation\/OUg3RFpXWTZIVldWb3VFb24wVXFZZEpXVnI2WWMyelJ4RGdHUXBOUE5LVT0="
@@ -104,6 +105,7 @@ API: add_user
 @param: company_city
 @param: company_postcode
 @param: company_color
+@param: company_logo <file>
 @param: terms <defaults to '0'> <required>
 @return:
 	Sample:
@@ -153,17 +155,17 @@ API: update_user
 @param: fname <required>
 @param: lname <required>
 @param: email <required>
-@param: phone <must be set>
-@param: cell <must be set>
-@param: company_name <must be set>
-@param: company_street <must be set>
-@param: company_state <must be set>
-@param: company_phone <must be set>
-@param: company_abn <must be set>
-@param: company_city <must be set>
-@param: company_postcode <must be set>
-@param: company_color <must be set>
-@param: company_logo <json encoded string of file details>
+@param: phone
+@param: cell
+@param: company_name
+@param: company_street
+@param: company_state
+@param: company_phone
+@param: company_abn
+@param: company_city
+@param: company_postcode
+@param: company_color
+@param: company_logo <file>
 @return:
 	Sample:
 	{

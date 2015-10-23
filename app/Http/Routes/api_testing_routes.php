@@ -10,7 +10,7 @@ Route::group(['prefix' => 'api'], function () {
 		$fields = array(
 			'pass_key' => config('api.passkey'), // required
 			'api_name' => 'user_authenticate',
-			'email' => 'rafael@sushidigital.com.au',
+			'email' => 'api3@sushidigital.com.au',
 			'password' => '123456'
 		);
 		echo '<!DOCTYPE html><html><body><form action="'.url('/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json').'" method="post" id="f">';	

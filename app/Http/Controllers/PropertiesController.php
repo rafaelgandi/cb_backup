@@ -76,27 +76,18 @@ class PropertiesController extends WasabiBaseController {
 			try {
 				if (in_array(false, $checks)) { throw new Exception('Some required field(s) have invalid values.'); }
 				// Floorplan Files //
-				if (isset($_FILES['property_floorplan_files']['name']) && trim($_FILES['property_floorplan_files']['name'][0]) !== '') {
+				if (isset($_FILES['property_floorplan_files']['name'])) {
 					$floorplan_file_arr = App\Upload::reArrayFiles($_FILES['property_floorplan_files']);
 					if (! App\Cb\Properties\Docs::isAllowed($floorplan_file_arr)) {
 						throw new Exception('One or more of the floor plan files are supported');
-					}
-					
-					
-					
-					
-					
+					}	
 				}
 				// Property Images //
-				if (isset($_FILES['property_images']['name']) && trim($_FILES['property_images']['name'][0]) !== '') {
+				if (isset($_FILES['property_images']['name'])) {
 					$images_file_arr = App\Upload::reArrayFiles($_FILES['property_images']);
-					
-					
-					
-					
-					
-					
-					
+					if (! App\Cb\Properties\Images::isAllowed($images_file_arr)) {
+						throw new Exception('One or more of the images is not supported');
+					}		
 				}
 				$property_id = App\Cb\Properties::add($current_user->id, [
 					'short_desc' => $p['property_short_desc'],
@@ -117,6 +108,15 @@ class PropertiesController extends WasabiBaseController {
 				if (! $property_id ) {
 					throw new Exception('Unable to add property. Please check your connection and try again.');
 				}
+				// Save the floorplan docs //
+				if (isset($floorplan_file_arr) && ! App\Cb\Properties\Docs::save($property_id, $floorplan_file_arr)) {
+					xplog('Unable to save some floor plan files for property "'.$property_id.'"', __METHOD__);
+				}
+				// Save the images //
+				if (isset($images_file_arr) && ! App\Cb\Properties\Images::save($property_id, $images_file_arr)) {
+					xplog('Unable to save some images for property "'.$property_id.'"', __METHOD__);
+				}
+				
 				cb_set_message('Successfully added property to your account', 1);
 				return redirect(route('my_properties'));				
 			}
@@ -145,6 +145,7 @@ class PropertiesController extends WasabiBaseController {
 				url('/js/mods/Cb.Notify.js')
 			]
 		]);
+		$data['porperty_list'] = App\Cb\Properties::getListByUserId($current_user->id); 
 		
 		return View::make('my_property_list', $data)->render();
 	}

@@ -74,25 +74,29 @@ class Api extends App\Cb\Base {
 		$p = $_post;
 		$this->req($p, ['email', 'password', 'token', 'os']);
 		$auth_response = App\Cb\Users::authenticate($p['email'], $p['password'], true);
+		$uid;
 		if (! is_object($auth_response)) {
 			if (is_numeric($auth_response)) {
 				// $auth_response <-- is user id in this context
 				$resend_link = route('resend_signup_confirmation', [
 					'uid' => App\Crypt::urlencode($auth_response)
 				]);
-				return [
-					'api_name' => $_post['api_name'],
-					'payload' => $resend_link
-				];
+				$uid = $auth_response;
 			}
-			$this->error('Invalid email or password');
+			else {
+				$this->error('Invalid email or password');
+			}	
 		}
-		App\Cb\Users\Presence::setOnline($auth_response->id); // Set presence as online
+		else {
+			$uid = $auth_response->id;
+			App\Cb\Users\Presence::setOnline($uid); // Set presence as online
+		}	
 		// Save the token for this user //
-		App\Cb\Devices::add($auth_response->id, $p['token'], $p['os']);
-		xplog('Registered device token "'.$p['token'].'" for user "'.$auth_response->id.'" for os "'.$p['os'].'"', __METHOD__);
-		$user_details = App\Cb\Users::getDetailsById($auth_response->id);
+		App\Cb\Devices::add($uid, $p['token'], $p['os']);
+		xplog('Registered device token "'.$p['token'].'" for user "'.$uid.'" for os "'.$p['os'].'"', __METHOD__);
+		$user_details = App\Cb\Users::getDetailsById($uid);
 		if (! $user_details) { $this->error('Unable to find user details.'); }
+		if (isset($resend_link)) { $user_details->resend_link = $resend_link; }
 		return [
 			'api_name' => $_post['api_name'],
 			'payload' => $user_details

@@ -57,4 +57,14 @@ class Properties extends App\Cb\Base {
 		}
 		return $property_id;
 	}
+	
+	protected function getListByUserId($_user_id, $_filters=[]) {
+		$uid = intval($_user_id);
+		if ($uid < 1) { return false; }	
+		$res = DB::table('properties')
+		->where('users_id', $uid)
+		->get();
+		if (!! $res) { return $res; }
+		return false;
+	}
 }
