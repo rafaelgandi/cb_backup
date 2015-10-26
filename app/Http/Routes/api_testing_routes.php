@@ -151,4 +151,27 @@ Route::group(['prefix' => 'api'], function () {
 		echo '<script>document.getElementById("f").submit();</script></form></body></html>';	
 	});	
 	
+	// Pusher testing
+	Route::any('/test/pusher', function () {
+		// See: http://davidwalsh.name/curl-post
+		//set POST variables
+		$fields = array(
+			'pass_key' => config('api.passkey'), // required
+			
+			'api_name' => 'test_pusher',
+			'channel_name' => 'my_channel', 
+			'event' => 'did_something', 
+			'data' => '{"name":"bar", "message":"test"}'	
+		);
+		echo '<!DOCTYPE html><html><body><form action="'.url('/api/v1/ae605b5ab5a60d46a5a7a30409dabb72.json').'" method="post" id="f">';	
+		foreach ($fields as $key=>$value) {
+			if (is_array($value)) {
+				foreach ($value as $k=>$v) { echo "<input type='hidden' name='".$k."' value='".$v."'>"; }
+			}
+			else { echo "<input type='hidden' name='".$key."' value='".$value."'>"; }		
+		}	
+		//echo '<input type="hidden" name="_token" id="token" value="'.csrf_token().'">';	
+		echo '<script>document.getElementById("f").submit();</script></form></body></html>';	
+	});	
+	
 });

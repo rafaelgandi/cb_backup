@@ -9,5 +9,7 @@ return [
 	],
 	'properties' => [
 		'max_num_file_per_type' => 10
-	]
+	],
+	// Number of items per page //
+	'num_per_page' => 2 
 ];

@@ -145,7 +145,9 @@ class PropertiesController extends WasabiBaseController {
 				url('/js/mods/Cb.Notify.js')
 			]
 		]);
-		$data['porperty_list'] = App\Cb\Properties::getListByUserId($current_user->id); 
+		$data['property_list'] = App\Cb\Properties::getListByUserId($current_user->id, [
+			'start_at' => 0
+		]); 
 		
 		return View::make('my_property_list', $data)->render();
 	}

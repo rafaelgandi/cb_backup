@@ -7,6 +7,7 @@ use Exception;
 use DB; // See: http://laravel.com/docs/5.1/database
 use PubSub; // See: http://baylorrae.com/php-pubsub/
 use Respect\Validation\Validator as Valid;
+use Pusher; // See: https://github.com/pusher/pusher-http-php
 
 class Api extends App\Cb\Base {
 	public static function instance() { return parent::getInstance(); }
@@ -121,6 +122,35 @@ class Api extends App\Cb\Base {
 		}
 		// Set user presence to offline //
 		App\Cb\Users\Presence::setOffline($uid); 
+		return [
+			'api_name' => $_post['api_name'],
+			'payload' => 1
+		];
+	}
+	
+	
+	/*//////////////////////////////////////////////////////////////////////////////// 
+		API: test_pusher
+		@param:  data <json encoded string>
+		@return: payload <number> (1=success)
+ 	*/////////////////////////////////////////////////////////////////////////////////
+	protected function testPusher($_post) {
+		$p = $_post;
+		$this->req($p, ['data']);
+		// See: http://www.smashingmagazine.com/2012/05/building-real-time-commenting-system/
+		// See: https://github.com/pusher/pusher-http-php
+		$app_id = '149666';
+		$app_key = '768422d844cb5acf6d6e';
+		$app_secret = '2f685782367009dec1bf';
+		$pusher = new Pusher($app_key, $app_secret, $app_id);
+		// See: https://github.com/pusher/pusher-http-php#debugging--logging
+		$pusher->set_logger(new App\Cb\RealTime\Logger());
+		$pusher->trigger('currentBID_channel', 'currentBID_event', App\Json::decode($p['data']));
+		
+		xplog('API PUSHER TRIGGER: '.App\Json::encode($p));
+		xplog('DATA: '.$p['data']);
+		xplog('API PUSHER CHANNELS: '.App\Json::encode($pusher->get_channels()));
+		
 		return [
 			'api_name' => $_post['api_name'],
 			'payload' => 1

@@ -11,7 +11,7 @@ Route::any('/update-property/{pid}', [
 	'uses' => 'PropertiesController@updateProperty'
 ]);
 
-Route::any('/my-properties/{pid}', [
+Route::any('/my-properties', [
 	'as' => 'my_properties',
 	'uses' => 'PropertiesController@listMyProperty'
 ]);

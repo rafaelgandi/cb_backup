@@ -21,3 +21,7 @@
 [22-Oct-2015 07:52:39 UTC] PHP Parse error:  syntax error, unexpected ',' in C:\xampp\htdocs\cleverbons\app\Cb\Properties\Docs.php on line 30
 [23-Oct-2015 09:24:45 Europe/Berlin] PHP Parse error:  syntax error, unexpected ''properties'' (T_CONSTANT_ENCAPSED_STRING), expecting ']' in C:\xampp\htdocs\cleverbons\config\cleverbons.php on line 10
 [23-Oct-2015 10:04:56 Europe/Berlin] PHP Parse error:  syntax error, unexpected ''properties'' (T_CONSTANT_ENCAPSED_STRING), expecting ']' in C:\xampp\htdocs\cleverbons\config\cleverbons.php on line 10
+[26-Oct-2015 02:05:02 UTC] PHP Fatal error:  Class 'App\Cb\Pusher' not found in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 146
+[26-Oct-2015 02:05:34 UTC] PHP Parse error:  syntax error, unexpected 'class' (T_CLASS), expecting ',' or ';' in C:\xampp\htdocs\cleverbons\app\Cb\Api.php on line 12
+[26-Oct-2015 06:53:27 UTC] PHP Fatal error:  Call to a member function render() on array in C:\xampp\htdocs\cleverbons\resources\views\my_property_list.php on line 15
+[26-Oct-2015 07:03:23 UTC] PHP Fatal error:  Call to a member function render() on array in C:\xampp\htdocs\cleverbons\resources\views\my_property_list.php on line 21

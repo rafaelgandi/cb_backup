@@ -61,9 +61,21 @@ class Properties extends App\Cb\Base {
 	protected function getListByUserId($_user_id, $_filters=[]) {
 		$uid = intval($_user_id);
 		if ($uid < 1) { return false; }	
-		$res = DB::table('properties')
+		$num_per_page = config('cleverbons.num_per_page');
+		$query = DB::table('properties')
 		->where('users_id', $uid)
-		->get();
+		->orderBy('id', 'desc');
+		if (isset($_filters['start_at'])) { // Usually used for pagination on API calls
+			// See: http://laravel.com/docs/5.1/queries#ordering-grouping-limit-and-offset
+			$query
+			->skip($_filters['start_at'])
+			->take($num_per_page);
+			$res = $query->get();
+		}
+		else {
+			// See: http://laravel.com/docs/5.1/pagination
+			$res = $query->paginate($num_per_page);
+		}	
 		if (!! $res) { return $res; }
 		return false;
 	}
